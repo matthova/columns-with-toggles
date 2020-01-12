@@ -20,6 +20,7 @@ const GridContainer = styled.div`
 
 const FarLeftColumn = styled.div`
   width: 50px;
+  min-width: 50px;
   background: pink;
   position: relative;
   z-index: 1;
@@ -41,7 +42,6 @@ interface LeftColumnContentProps {
 
 const setLeft = (props: LeftColumnContentProps) => {
   const left = props.width < 200 ? -200 : props.open ? 0: -props.width;
-  console.log(left);
   return left;
 }
 
