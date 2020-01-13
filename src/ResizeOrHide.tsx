@@ -1,0 +1,135 @@
+import React from 'react';
+import styled from 'styled-components';
+import { Resizable } from 're-resizable';
+
+const TRANSITION_SPEED = '300ms';
+
+type Sides = 'left' | 'right' | 'top' | 'bottom';
+
+interface ResizeOrHideProps {
+  anchorSide: Sides;
+  minSize: number;
+  children: React.ReactNode;
+  open: boolean;
+  onChangeOpen: (open: boolean) => void;
+}
+
+interface ContainerProps {
+  readonly isDragging: boolean;
+  readonly ref: HTMLElement;
+  readonly anchorSide: Sides;
+}
+
+const Container = styled(Resizable)<ContainerProps>(({ isDragging, anchorSide }) => ({
+  transition: isDragging ? 'none' : `${['left', 'right'].includes(anchorSide) ? 'width' : 'height'} ${TRANSITION_SPEED}`
+}));
+
+interface ContentContainerProps {
+  readonly anchorSide: Sides;
+  readonly size: number;
+  readonly minSize: number;
+  readonly open: boolean;
+  readonly isDragging: boolean;
+}
+
+const setSize = (props: ContentContainerProps) => {
+  const size = props.size < props.minSize ? -props.minSize : props.open ? 0 : -props.size;
+  return size;
+}
+
+const ContentContainer = styled.div.attrs((props: ContentContainerProps): any => ({
+  style: {
+    [props.anchorSide]: `${setSize(props)}px`,
+    [['left', 'right'].includes(props.anchorSide) ? 'width' : 'height']: `${props.size}px`
+  }
+})) <ContentContainerProps>`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 1px solid black;
+  transition: ${ p => p.isDragging ? 'none' : `${p.anchorSide} ${TRANSITION_SPEED}`};
+  ${ p => `${['left', 'right'].includes(p.anchorSide) ? 'min-width' : 'min-height'}: ${p.minSize}px;`}
+`
+
+const getAnchorsOppositeSide = (anchor: Sides): Sides => {
+  if (anchor === 'left') {
+    return 'right';
+  }
+  if (anchor === 'right') {
+    return 'left';
+  }
+  if (anchor === 'top') {
+    return 'bottom';
+  }
+  return 'top';
+}
+
+export const ResizeOrHide = ({ anchorSide, children, minSize, open: openProp, onChangeOpen, ...rest }: ResizeOrHideProps) => {
+  const [size, setSize] = React.useState(minSize);
+  const [isDragging, setIsDragging] = React.useState(false);
+  const [open, setOpen] = React.useState(openProp);
+  const ref = React.useRef(null) as any;
+
+  React.useEffect(() => {
+    setOpen(openProp);
+  }, [open, openProp]);
+
+  const sizeProp = ['left', 'right'].includes(anchorSide)
+    ? { width: open ? size : 0, height: 'auto' }
+    : { width: 'auto', height: open ? size : 0 }
+
+  const snap = open && size > minSize
+    ? undefined
+    : { [['left', 'right'].includes(anchorSide) ? 'x' : 'y']: [0, minSize, minSize + 1] }
+
+  return (
+    <Container
+      {...rest}
+      anchorSide={anchorSide}
+      enable={{ [getAnchorsOppositeSide(anchorSide)]: true }}
+      ref={ref}
+      size={sizeProp}
+      snap={snap}
+      onResize={() => {
+        if (ref.current) {
+          const newSize = ref.current.resizable.getBoundingClientRect()[['left', 'right'].includes(anchorSide) ? 'width' : 'height'];
+          if (newSize === 0 && !open) {
+            return;
+          }
+          setIsDragging(true);
+          onChangeOpen(true);
+          if (open && newSize < minSize && newSize > 0) {
+            setSize(minSize);
+          } else {
+            setSize(newSize);
+          }
+        }
+      }}
+      onResizeStop={(event, direction, ref, dif) => {
+        if (size === 0) {
+          onChangeOpen(false);
+          setSize(['left', 'right'].includes(anchorSide) ? -dif.width : -dif.height);
+        }
+        // I can't think of a clean way to watch for this.
+        // We could use useEffect but the logic would be really messy
+        // If we've dragged closed, we want to set the size to whatever it was when we started dragging
+        // In order to prevent from animating this change we don't set isDragging to false until the next tick
+        setTimeout(() => {
+          setIsDragging(false);
+        }, 0)
+      }}
+      isDragging={isDragging}
+    >
+      <ContentContainer
+        anchorSide={anchorSide}
+        size={size}
+        minSize={minSize}
+        open={open}
+        isDragging={isDragging}
+      >
+        {children}
+      </ContentContainer>
+    </Container>
+  )
+}
+
