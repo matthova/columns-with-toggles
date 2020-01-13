@@ -10,41 +10,39 @@ const Container = styled.div`
   right: 0;
 `;
 
-const LeftColumn = styled(ResizeOrHide)`
-  background: #FFAAAA;
-`;
-
-const RightColumn = styled(ResizeOrHide)`
-  background: #AAFFAA;
-`;
-
-const BottomRow = styled(ResizeOrHide)`
-  background: #AAAAFF;
-`
-
 const GridContainer = styled.div`
+  display: grid;
   width: 100%;
   height: 100%;
-  display: flex;
-`
+  grid-template-columns: 120px min-content 1fr min-content;
+  grid-template-rows: 1fr min-content;
+`;
 
 const FarLeftColumn = styled.div`
-  width: 120px;
   min-width: 120px;
   background: #FFFFAA;
   position: relative;
   z-index: 1;
+  grid-area: 1 / 1 / 3 / 2;
 `;
 
+const LeftColumn = styled(ResizeOrHide)`
+  background: #FFAAAA;
+  grid-area: 1 / 2 / 3 / 3;
+`;
 
-const CenterColumn = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+const RightColumn = styled(ResizeOrHide)`
+  background: #AAFFAA;
+  grid-area: 1 / 4 / 3 / 5;
+`;
+
+const BottomRow = styled(ResizeOrHide)`
+  background: #AAAAFF;
+  grid-area: 2 / 3 / 3 / 4;
 `
 
 const Canvas = styled.div`
-  flex: 1;
+  grid-area: 1 / 3 / 2 / 4;
 `
 
 
@@ -93,19 +91,9 @@ const App: React.FC = () => {
         >
           <div>Left Column</div>
         </LeftColumn>
-        <CenterColumn>
-          <Canvas>
-            Canvas
-          </Canvas>
-          <BottomRow
-            anchorSide="bottom"
-            minSize={200}
-            open={bottomOpen}
-            onChangeOpen={(open) => { setBottomOpen(open) }}
-          >
-            <div>Bottom Row</div>
-          </BottomRow>
-        </CenterColumn>
+        <Canvas>
+          Canvas
+        </Canvas>
         <RightColumn
           anchorSide="right"
           minSize={200}
@@ -114,6 +102,14 @@ const App: React.FC = () => {
         >
           <div>Right Column</div>
         </RightColumn>
+        <BottomRow
+          anchorSide="bottom"
+          minSize={200}
+          open={bottomOpen}
+          onChangeOpen={(open) => { setBottomOpen(open) }}
+        >
+          <div>Bottom Row</div>
+        </BottomRow>
       </GridContainer>
     </Container>
   );
