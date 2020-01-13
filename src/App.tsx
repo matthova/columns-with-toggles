@@ -16,6 +16,8 @@ const GridContainer = styled.div`
   height: 100%;
   grid-template-columns: 120px min-content 1fr min-content;
   grid-template-rows: 1fr min-content;
+  background: black;
+  grid-gap: 3px;
 `;
 
 const FarLeftColumn = styled.div`

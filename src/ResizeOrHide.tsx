@@ -44,7 +44,6 @@ const ContentContainer = styled.div.attrs((props: ContentContainerProps): any =>
   position: absolute;
   width: 100%;
   height: 100%;
-  border: 1px solid black;
   transition: ${ p => p.isDragging ? 'none' : `${p.anchorSide} ${TRANSITION_SPEED}`};
   ${ p => `${['left', 'right'].includes(p.anchorSide) ? 'min-width' : 'min-height'}: ${p.minSize}px;`}
 `
