@@ -15,21 +15,19 @@ interface ResizeOrHideProps {
 }
 
 interface ContainerProps {
-  readonly isDragging: boolean;
+  readonly animated: 0 | 1;
   readonly ref: HTMLElement;
-  readonly anchorSide: Sides;
 }
 
-const Container = styled(Resizable)<ContainerProps>(({ isDragging, anchorSide }) => ({
-  transition: isDragging ? 'none' : `${['left', 'right'].includes(anchorSide) ? 'width' : 'height'} ${TRANSITION_SPEED}`
-}));
+const Container = styled(Resizable) <ContainerProps>`
+  transition: ${p => p.animated ? `width ${TRANSITION_SPEED}, height ${TRANSITION_SPEED}` : 'none'}
+`;
 
 interface ContentContainerProps {
   readonly anchorSide: Sides;
   readonly size: number;
   readonly minSize: number;
   readonly open: boolean;
-  readonly isDragging: boolean;
 }
 
 const setSize = (props: ContentContainerProps) => {
@@ -85,7 +83,7 @@ export const ResizeOrHide = ({ anchorSide, children, minSize, open: openProp, on
   return (
     <Container
       {...rest}
-      anchorSide={anchorSide}
+      animated={isDragging ? 0 : 1}
       enable={{ [getAnchorsOppositeSide(anchorSide)]: true }}
       ref={ref}
       size={sizeProp}
@@ -118,7 +116,7 @@ export const ResizeOrHide = ({ anchorSide, children, minSize, open: openProp, on
           setIsDragging(false);
         }, 0)
       }}
-      isDragging={isDragging}
+    // isDragging={isDragging}
     >
       <ContentContainer
         anchorSide={anchorSide}
