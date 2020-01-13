@@ -1,12 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Resizable } from 're-resizable';
+import { Resizable, ResizableProps } from 're-resizable';
 
 const TRANSITION_SPEED = '300ms';
 
 type Sides = 'left' | 'right' | 'top' | 'bottom';
 
-interface ResizeOrHideProps {
+interface ResizeOrHideProps extends ResizableProps {
   anchorSide: Sides;
   minSize: number;
   children: React.ReactNode;
