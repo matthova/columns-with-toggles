@@ -14,81 +14,63 @@ const GridContainer = styled.div`
   display: grid;
   width: 100%;
   height: 100%;
-  grid-template-columns: 120px min-content 1fr min-content;
+  grid-template-columns: min-content 1fr min-content;
   grid-template-rows: 1fr min-content;
   background: black;
   grid-gap: 3px;
 `;
 
-const FarLeftColumn = styled.div`
-  min-width: 120px;
-  background: #FFFFAA;
-  position: relative;
-  z-index: 1;
-  grid-area: 1 / 1 / 3 / 2;
-`;
+interface FarLeftColumnProps {
+  readonly open: boolean;
+}
 
 const LeftColumn = styled(ResizeOrHide)`
   background: #FFAAAA;
-  grid-area: 1 / 2 / 3 / 3;
+  grid-area: 1 / 1 / 3 / 2;
 `;
 
 const RightColumn = styled(ResizeOrHide)`
   background: #AAFFAA;
-  grid-area: 1 / 4 / 3 / 5;
+  grid-area: 1 / 3 / 3 / 4;
 `;
 
 const BottomRow = styled(ResizeOrHide)`
   background: #AAAAFF;
-  grid-area: 2 / 3 / 3 / 4;
+  grid-area: 2 / 2 / 3 / 3;
 `
 
 const Canvas = styled.div`
-  grid-area: 1 / 3 / 2 / 4;
+  grid-area: 1 / 2 / 2 / 3;
+  background: #AAAAAA;
 `
 
 
 const App: React.FC = () => {
+  const [allOpen, setAllOpen] = React.useState(false);
   const [leftOpen, setLeftOpen] = React.useState(true);
   const [rightOpen, setRightOpen] = React.useState(true);
   const [bottomOpen, setBottomOpen] = React.useState(true);
 
+  React.useEffect(() => {
+    const keydownListener = (e: KeyboardEvent) => {
+      if (e.keyCode === 27) {
+        setAllOpen(!allOpen);
+      }
+    };
+
+    document.addEventListener('keydown', keydownListener);
+    return () => {
+      document.removeEventListener('keydown', keydownListener);
+    }
+  }, [allOpen]);
+
   return (
     <Container>
       <GridContainer>
-        <FarLeftColumn>
-          <div>
-            <button
-              onClick={() => {
-                setLeftOpen(!leftOpen);
-              }}
-            >
-              Toggle Left
-              </button>
-          </div>
-          <div>
-            <button
-              onClick={() => {
-                setRightOpen(!rightOpen);
-              }}
-            >
-              Toggle Right
-              </button>
-          </div>
-          <div>
-            <button
-              onClick={() => {
-                setBottomOpen(!bottomOpen);
-              }}
-            >
-              Toggle Bottom
-              </button>
-          </div>
-        </FarLeftColumn>
         <LeftColumn
           anchorSide="left"
-          minSize={200}
-          open={leftOpen}
+          minSize={320}
+          open={allOpen && leftOpen}
           onChangeOpen={(open) => { setLeftOpen(open) }}
         >
           <div>Left Column</div>
@@ -98,16 +80,16 @@ const App: React.FC = () => {
         </Canvas>
         <RightColumn
           anchorSide="right"
-          minSize={200}
-          open={rightOpen}
+          minSize={320}
+          open={allOpen && rightOpen}
           onChangeOpen={(open) => { setRightOpen(open) }}
         >
           <div>Right Column</div>
         </RightColumn>
         <BottomRow
           anchorSide="bottom"
-          minSize={200}
-          open={bottomOpen}
+          minSize={320}
+          open={allOpen && bottomOpen}
           onChangeOpen={(open) => { setBottomOpen(open) }}
         >
           <div>Bottom Row</div>
