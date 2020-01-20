@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ResizeOrHide } from './ResizeOrHide';
+import { ResizeOrHide, TRANSITION_SPEED } from './ResizeOrHide';
+import { onWindowResize } from './geometries';
 
 const Container = styled.div`
   position: absolute;
@@ -11,13 +12,10 @@ const Container = styled.div`
 `;
 
 const GridContainer = styled.div`
-  display: grid;
+  display: flex;
   width: 100%;
   height: 100%;
-  grid-template-columns: min-content 1fr min-content;
-  grid-template-rows: 1fr min-content;
   background: black;
-  grid-gap: 3px;
 `;
 
 interface FarLeftColumnProps {
@@ -26,22 +24,33 @@ interface FarLeftColumnProps {
 
 const LeftColumn = styled(ResizeOrHide)`
   background: #FFAAAA;
-  grid-area: 1 / 1 / 3 / 2;
 `;
 
 const RightColumn = styled(ResizeOrHide)`
   background: #AAFFAA;
-  grid-area: 1 / 3 / 3 / 4;
+`;
+
+const CenterColumn = styled('div')`
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: column;
 `;
 
 const BottomRow = styled(ResizeOrHide)`
   background: #AAAAFF;
-  grid-area: 2 / 2 / 3 / 3;
 `
 
 const Canvas = styled.div`
-  grid-area: 1 / 2 / 2 / 3;
   background: #AAAAAA;
+  flex: 1 1 100%;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  > canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
 `
 
 
@@ -58,6 +67,10 @@ const App: React.FC = () => {
       }
     };
 
+    setTimeout(() => {
+      onWindowResize();
+    }, TRANSITION_SPEED);
+
     document.addEventListener('keydown', keydownListener);
     return () => {
       document.removeEventListener('keydown', keydownListener);
@@ -69,37 +82,38 @@ const App: React.FC = () => {
       <GridContainer>
         <LeftColumn
           anchorSide="left"
-          minSize={320}
+          minSize={600}
           open={allOpen && leftOpen}
           onChangeOpen={(open) => { setLeftOpen(open) }}
+          onIsDraggingChange={onWindowResize}
         >
           <div>Left Column</div>
         </LeftColumn>
-        <Canvas>
-          Canvas
+        <CenterColumn>
+        <Canvas id="react-canvas">
         </Canvas>
-        <RightColumn
-          anchorSide="right"
-          minSize={320}
-          open={allOpen && rightOpen}
-          onChangeOpen={(open) => { setRightOpen(open) }}
-        >
-          <div>Right Column</div>
-        </RightColumn>
         <BottomRow
           anchorSide="bottom"
           minSize={320}
           open={allOpen && bottomOpen}
           onChangeOpen={(open) => { setBottomOpen(open) }}
+          onIsDraggingChange={onWindowResize}
         >
           <div>Bottom Row</div>
         </BottomRow>
+        </CenterColumn>
+        <RightColumn
+          anchorSide="right"
+          minSize={320}
+          open={allOpen && rightOpen}
+          onChangeOpen={(open) => { setRightOpen(open) }}
+          onIsDraggingChange={onWindowResize}
+        >
+          <div>Right Column</div>
+        </RightColumn>
       </GridContainer>
     </Container>
   );
 }
-
-
-
 
 export default App;

@@ -2,7 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { Resizable, ResizableProps } from 're-resizable';
 
-const TRANSITION_SPEED = '300ms';
+export const TRANSITION_SPEED = 300;
+export const TRANSITION_SPEED_STRING = `${TRANSITION_SPEED}ms`;
 
 type Sides = 'left' | 'right' | 'top' | 'bottom';
 
@@ -12,6 +13,7 @@ interface ResizeOrHideProps extends ResizableProps {
   children: React.ReactNode;
   open: boolean;
   onChangeOpen: (open: boolean) => void;
+  onIsDraggingChange?: () => void;
 }
 
 interface ContainerProps {
@@ -20,7 +22,7 @@ interface ContainerProps {
 }
 
 const Container = styled(Resizable) <ContainerProps>`
-  transition: ${p => p.animated ? `width ${TRANSITION_SPEED}, height ${TRANSITION_SPEED}` : 'none'}
+  transition: ${p => p.animated ? `width ${TRANSITION_SPEED_STRING}, height ${TRANSITION_SPEED_STRING}` : 'none'}
 `;
 
 interface ContentContainerProps {
@@ -35,6 +37,12 @@ const setSize = (props: ContentContainerProps) => {
   return size;
 }
 
+
+const Filler = styled.div<{ size: number, isOpen: boolean }>`
+  width: ${p => p.isOpen ? p.size : 0}px;
+  transition: all ${TRANSITION_SPEED_STRING};
+`;
+
 const ContentContainer = styled.div.attrs((props: ContentContainerProps): any => ({
   style: {
     [props.anchorSide]: `${setSize(props)}px`,
@@ -44,7 +52,7 @@ const ContentContainer = styled.div.attrs((props: ContentContainerProps): any =>
   position: absolute;
   width: 100%;
   height: 100%;
-  transition: ${ p => p.isDragging ? 'none' : `${p.anchorSide} ${TRANSITION_SPEED}`};
+  transition: ${ p => p.isDragging ? 'none' : `${p.anchorSide} ${TRANSITION_SPEED_STRING}`};
   ${ p => `${['left', 'right'].includes(p.anchorSide) ? 'min-width' : 'min-height'}: ${p.minSize}px;`}
 `
 
@@ -61,7 +69,7 @@ const getAnchorsOppositeSide = (anchor: Sides): Sides => {
   return 'top';
 }
 
-export const ResizeOrHide = ({ anchorSide, children, minSize, open: openProp, onChangeOpen, ...rest }: ResizeOrHideProps) => {
+export const ResizeOrHide = ({ anchorSide, children, minSize, open: openProp, onChangeOpen, onIsDraggingChange, ...rest }: ResizeOrHideProps) => {
   const [size, setSize] = React.useState(minSize);
   const [isDragging, setIsDragging] = React.useState(false);
   const [open, setOpen] = React.useState(openProp);
@@ -70,6 +78,12 @@ export const ResizeOrHide = ({ anchorSide, children, minSize, open: openProp, on
   React.useEffect(() => {
     setOpen(openProp);
   }, [open, openProp]);
+
+  React.useEffect(() => {
+    if (onIsDraggingChange) {
+      onIsDraggingChange();
+    }
+  }, [isDragging, onIsDraggingChange]);
 
   const sizeProp = ['left', 'right'].includes(anchorSide)
     ? { width: open ? size : 0, height: 'auto' }
@@ -126,6 +140,7 @@ export const ResizeOrHide = ({ anchorSide, children, minSize, open: openProp, on
       >
         {children}
       </ContentContainer>
+      <Filler size={size} isOpen={open}/>
     </Container>
   )
 }
