@@ -55,35 +55,29 @@ const Canvas = styled.div`
 
 
 const App: React.FC = () => {
-  const [allOpen, setAllOpen] = React.useState(false);
+  const [buttonState, setButtonState] = React.useState('view');
   const [leftOpen, setLeftOpen] = React.useState(true);
   const [rightOpen, setRightOpen] = React.useState(true);
   const [bottomOpen, setBottomOpen] = React.useState(true);
 
   React.useEffect(() => {
-    const keydownListener = (e: KeyboardEvent) => {
-      if (e.keyCode === 27) {
-        setAllOpen(!allOpen);
-      }
-    };
-
     setTimeout(() => {
       onWindowResize();
     }, TRANSITION_SPEED);
-
-    document.addEventListener('keydown', keydownListener);
-    return () => {
-      document.removeEventListener('keydown', keydownListener);
-    }
-  }, [allOpen]);
+  }, [buttonState]);
 
   return (
     <Container>
+      <div style={{padding: 16, display: 'flex', justifyContent: 'center', position: 'absolute', color: 'white', width: '100%', textAlign: 'center'}}>
+      <button onClick={() => setButtonState('view')} style={{background: buttonState==='view' ? 'pink' : 'white'}}>View</button>
+      <button onClick={() => setButtonState('edit')} style={{background: buttonState==='edit' ? 'pink' : 'white'}}>Edit</button>
+      <button onClick={() => setButtonState('studio')} style={{background: buttonState==='studio' ? 'pink' : 'white'}}>Studio</button>
+      </div>
       <GridContainer>
         <LeftColumn
           anchorSide="left"
-          minSize={600}
-          open={allOpen && leftOpen}
+          minSize={320}
+          open={buttonState === 'studio' && leftOpen}
           onChangeOpen={(open) => { setLeftOpen(open) }}
           onIsDraggingChange={onWindowResize}
         >
@@ -94,8 +88,8 @@ const App: React.FC = () => {
         </Canvas>
         <BottomRow
           anchorSide="bottom"
-          minSize={320}
-          open={allOpen && bottomOpen}
+          minSize={200}
+          open={buttonState === 'studio' && bottomOpen}
           onChangeOpen={(open) => { setBottomOpen(open) }}
           onIsDraggingChange={onWindowResize}
         >
@@ -105,7 +99,7 @@ const App: React.FC = () => {
         <RightColumn
           anchorSide="right"
           minSize={320}
-          open={allOpen && rightOpen}
+          open={buttonState === 'studio' && rightOpen}
           onChangeOpen={(open) => { setRightOpen(open) }}
           onIsDraggingChange={onWindowResize}
         >

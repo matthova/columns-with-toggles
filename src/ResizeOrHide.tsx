@@ -97,7 +97,7 @@ export const ResizeOrHide = ({ anchorSide, children, minSize, open: openProp, on
     <Container
       {...rest}
       animated={isDragging ? 0 : 1}
-      enable={{ [getAnchorsOppositeSide(anchorSide)]: true }}
+      enable={{ [getAnchorsOppositeSide(anchorSide)]: false }}
       ref={ref}
       size={sizeProp}
       snap={snap}
