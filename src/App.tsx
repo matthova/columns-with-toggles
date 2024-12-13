@@ -1,7 +1,7 @@
-import React from 'react';
-import styled from 'styled-components';
-import { ResizeOrHide, TRANSITION_SPEED } from './ResizeOrHide';
-import { onWindowResize } from './geometries';
+import React from "react";
+import styled from "styled-components";
+import { ResizeOrHide, TRANSITION_SPEED } from "./ResizeOrHide";
+import { onWindowResize } from "./geometries";
 
 const Container = styled.div`
   position: absolute;
@@ -23,25 +23,25 @@ interface FarLeftColumnProps {
 }
 
 const LeftColumn = styled(ResizeOrHide)`
-  background: #FFAAAA;
+  background: #ffaaaa;
 `;
 
 const RightColumn = styled(ResizeOrHide)`
-  background: #AAFFAA;
+  background: #aaffaa;
 `;
 
-const CenterColumn = styled('div')`
+const CenterColumn = styled("div")`
   flex: 1 1 100%;
   display: flex;
   flex-direction: column;
 `;
 
 const BottomRow = styled(ResizeOrHide)`
-  background: #AAAAFF;
-`
+  background: #aaaaff;
+`;
 
 const Canvas = styled.div`
-  background: #AAAAAA;
+  background: #aaaaaa;
   flex: 1 1 100%;
   width: 100%;
   height: 100%;
@@ -51,11 +51,10 @@ const Canvas = styled.div`
     width: 100% !important;
     height: 100% !important;
   }
-`
-
+`;
 
 const App: React.FC = () => {
-  const [buttonState, setButtonState] = React.useState('view');
+  const [buttonState, setButtonState] = React.useState("view");
   const [leftOpen, setLeftOpen] = React.useState(true);
   const [rightOpen, setRightOpen] = React.useState(true);
   const [bottomOpen, setBottomOpen] = React.useState(true);
@@ -68,39 +67,69 @@ const App: React.FC = () => {
 
   return (
     <Container>
-      <div style={{padding: 16, display: 'flex', justifyContent: 'center', position: 'absolute', color: 'white', width: '100%', textAlign: 'center'}}>
-      <button onClick={() => setButtonState('view')} style={{background: buttonState==='view' ? 'pink' : 'white'}}>View</button>
-      <button onClick={() => setButtonState('edit')} style={{background: buttonState==='edit' ? 'pink' : 'white'}}>Edit</button>
-      <button onClick={() => setButtonState('studio')} style={{background: buttonState==='studio' ? 'pink' : 'white'}}>Studio</button>
+      <div
+        style={{
+          padding: 16,
+          display: "flex",
+          justifyContent: "center",
+          position: "absolute",
+          color: "white",
+          width: "100%",
+          textAlign: "center",
+        }}
+      >
+        <button
+          onClick={() => setButtonState("view")}
+          style={{ background: buttonState === "view" ? "pink" : "white" }}
+        >
+          View
+        </button>
+        <button
+          onClick={() => setButtonState("edit")}
+          style={{ background: buttonState === "edit" ? "pink" : "white" }}
+        >
+          Edit
+        </button>
+        <button
+          onClick={() => setButtonState("studio")}
+          style={{ background: buttonState === "studio" ? "pink" : "white" }}
+        >
+          Studio
+        </button>
       </div>
       <GridContainer>
         <LeftColumn
           anchorSide="left"
           minSize={320}
-          open={buttonState === 'studio' && leftOpen}
-          onChangeOpen={(open) => { setLeftOpen(open) }}
+          open={buttonState === "studio" && leftOpen}
+          onChangeOpen={(open) => {
+            setLeftOpen(open);
+          }}
           onIsDraggingChange={onWindowResize}
         >
           <div>Left Column</div>
         </LeftColumn>
         <CenterColumn>
-        <Canvas id="react-canvas">
-        </Canvas>
-        <BottomRow
-          anchorSide="bottom"
-          minSize={200}
-          open={buttonState === 'studio' && bottomOpen}
-          onChangeOpen={(open) => { setBottomOpen(open) }}
-          onIsDraggingChange={onWindowResize}
-        >
-          <div>Bottom Row</div>
-        </BottomRow>
+          <Canvas id="react-canvas"></Canvas>
+          <BottomRow
+            anchorSide="bottom"
+            minSize={200}
+            open={buttonState === "studio" && bottomOpen}
+            onChangeOpen={(open) => {
+              setBottomOpen(open);
+            }}
+            onIsDraggingChange={onWindowResize}
+          >
+            <div>Bottom Row</div>
+          </BottomRow>
         </CenterColumn>
         <RightColumn
           anchorSide="right"
           minSize={320}
-          open={buttonState === 'studio' && rightOpen}
-          onChangeOpen={(open) => { setRightOpen(open) }}
+          open={buttonState === "studio" && rightOpen}
+          onChangeOpen={(open) => {
+            setRightOpen(open);
+          }}
           onIsDraggingChange={onWindowResize}
         >
           <div>Right Column</div>
@@ -108,6 +137,6 @@ const App: React.FC = () => {
       </GridContainer>
     </Container>
   );
-}
+};
 
 export default App;
